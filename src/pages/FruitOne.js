@@ -6,7 +6,7 @@ import { Table } from "react-bootstrap";
 
 
 function FruitOne() {
-    const [fruit, setFruit] = useState({}); //넘겨받은 과일 11개
+    const [fruit, setFruit] = useState({}); //넘겨받은 과일 1개
 
     useEffect(() => { //backend 서버에서 데이터 읽어오기
         const url = `${API_BASE_URL}/fruit`; //요청 할 url 
@@ -16,10 +16,8 @@ function FruitOne() {
         axios
             .get(url, {})
             .then((response) => {
-
                 console.log('응답 받은 데이터');
                 console.log(response.data);
-
                 setFruit(response.data);
             });
     }, []);

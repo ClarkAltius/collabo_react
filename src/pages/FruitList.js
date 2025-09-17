@@ -13,8 +13,9 @@ function FruitList() {
                 console.log(response.data);
                 setFruitList(response.data);
             })
-
     }, []);
+
+    
     return (
         <>
             <Table hover style={{ margin: '5px' }}>
