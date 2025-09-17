@@ -1,24 +1,36 @@
 import logo from './logo.svg';
 import './App.css';
+import { Navbar } from 'react-bootstrap';
+import { Nav } from 'react-bootstrap';
+import { Container } from 'react-bootstrap';
+import MenuItems from './ui/MenuItems';
+import AppRoutes from './routes/AppRoutes';
+
 
 function App() {
+  const appName = "IT Academy Coffee Shop"
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <>
+      <Navbar bg="dark" data-bs-theme="dark" expand="lg">
+        <Container>
+          <Navbar.Brand href='/'>{appName}</Navbar.Brand>
+          <Nav className="me-auto">
+            <MenuItems />
+            메뉴 리스트
+          </Nav>
+        </Container>
+      </Navbar >
+      내용
+
+      {/** 분리된 라우터 정보 */}
+      <AppRoutes />
+      
+      < footer className="bg-dark text-light text-center py-3 mt-5" >
+        <p>&copy; 2025 {appName}. All rights reserved.</p>
+      </footer >
+
+    </>
   );
 }
 
