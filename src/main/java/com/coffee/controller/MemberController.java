@@ -69,8 +69,9 @@ return new ResponseEntity<>(Map.of("email","이미 존재하는 이메일 주소
         //response : 클라이언트에게 넘겨주고자 하는 정보의 모듬
         Map<String, Object> response = new HashMap<>();
 
+
         if(isFound == true){
-            response.put("message", "success");
+            response.put("message", "로그인 성공");
             response.put("member", member);
             return ResponseEntity.ok(response);
         }else{
@@ -78,5 +79,10 @@ return new ResponseEntity<>(Map.of("email","이미 존재하는 이메일 주소
             //401 에러는 인증 실패를 의미 (unauthorized)
             return ResponseEntity.status(401).body(response);
         }
+    }
+    @PostMapping("logout")
+    public ResponseEntity<String> logout(){
+        //추후 추가 코딩 정보가 있으면 추가 될 수 있음
+        return ResponseEntity.ok("logout success");
     }
 }
