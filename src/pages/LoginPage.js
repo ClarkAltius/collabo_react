@@ -6,8 +6,8 @@ import axios from "axios";
 function LoginPage() {
 
     //파라미터 관련 스테이트
-    const [password, setPassword] = useState();
-    const [email, setEmail] = useState();
+    const [password, setPassword] = useState('');
+    const [email, setEmail] = useState('');
 
     //  폼 유효성 검사(Form Validation Check) 관련 state 정의
     // 입력 방식에 문제 발생시 값을 저장 할 곳.
@@ -20,7 +20,7 @@ function LoginPage() {
         try {
 
             const url = `${API_BASE_URL}/member/login`;
-            const parameter = { email, parameter };
+            const parameter = { email, password };
             //스프링부트가 넘겨주는 정보는 Map<String, Object> 타입입니다. 
             const response = await axios.post(url, parameter);
 
@@ -35,7 +35,8 @@ function LoginPage() {
                 navigate(`/Homepage`);
 
             } else { //로그인 실패 
-                setErrors(message);
+                console.log('로그인 실패')
+                setErrors({ message });
 
             }
         } catch (error) {
@@ -46,10 +47,6 @@ function LoginPage() {
             }
         }
     }
-
-
-
-
 
     return (
         <Container className="d-flex justify-content-center align-items-center" style={{ height: '70vh' }}>
