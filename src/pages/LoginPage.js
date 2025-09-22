@@ -3,8 +3,8 @@ import { Container, Row, Card, Form, Col, Button, Alert } from "react-bootstrap"
 import { API_BASE_URL } from "../config/config";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
-function LoginPage() {
-
+function LoginPage({ setUser }) {
+    //setUser: 사용자 정보를 저장하기 위한 setter 메소드
     //파라미터 관련 스테이트
     const [password, setPassword] = useState('');
     const [email, setEmail] = useState('');
@@ -31,19 +31,20 @@ function LoginPage() {
                 console.log('로그인한 유저의 정보');
                 console.log(member);
                 //로그인 성공시 사용자 정보를 저장해야합니다. 
+                setUser(member);
                 //로그인 성공 후 홈페이지 이동
-                navigate(`/Homepage`);
+                navigate(`/`);
 
             } else { //로그인 실패 
-                console.log('로그인 실패')
-                setErrors({ message });
+                console.log('로그인 실패 front')
+                setErrors(message);
 
             }
         } catch (error) {
             if (error.response) {
                 setErrors(error.response.data.message || '로그인 실패');
             } else {
-
+                setErrors('로그인 중 오류가 발생했습니다.');
             }
         }
     }
