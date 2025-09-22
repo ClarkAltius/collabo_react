@@ -27,6 +27,7 @@ public class Member {
 
     @Column(unique = true, nullable = false)
     @NotBlank(message = "이메일은 필수 입력 사항입니다.")
+    @Email(message = "올바른 이메일 형식으로 입력해주세요")
     private String email;
 
     @NotBlank(message = "비밀번호는 필수 입력 사항입니다.")
@@ -36,7 +37,6 @@ public class Member {
     private String password;
 
     @NotBlank(message = "주소는 필수 입력 사항입니다.")
-    @Email(message = "올바른 이메일 형식을 입력해주세요")
     private String address;
     @Enumerated(EnumType.STRING) //칼럼에 문자열 형식으로 데이터가 들어감
     private Role role; //USER of ADMIN
