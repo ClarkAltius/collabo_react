@@ -2,6 +2,7 @@ import './App.css';
 import MenuItems from './ui/MenuItems';
 import AppRoutes from './routes/AppRoutes';
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 
 function App() {
@@ -26,9 +27,22 @@ function App() {
     console.log('로그인 성공');
   }
 
-  const handleLogoutSuccess = () => {
+  const navigate = useNavigate();
+
+  // const handleLogoutSuccess = () => {
+
+  //   setUser(null);
+  // }
+
+  // 로그인한 사용자가 '로그 아웃' 버튼을 클릭했습니다.
+  const handleLogout = (event) => {
+    event.preventDefault();
+
     setUser(null);
-  }
+    localStorage.removeItem('user');
+    console.log('로그 아웃 성공');
+    navigate(`/member/login`);
+  };
 
 
   return (
@@ -36,7 +50,7 @@ function App() {
       <MenuItems appName={appName} user={user} />
 
       {/** 분리된 라우터 정보 */}
-      <AppRoutes user={user} handleLoginSuccess={handleLoginSuccess} logout={handleLogoutSuccess} />
+      <AppRoutes user={user} handleLoginSuccess={handleLoginSuccess} />
 
       < footer className="bg-dark text-light text-center py-3 mt-5" >
         <p>&copy; 2025 {appName}. All rights reserved.</p>
