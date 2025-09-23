@@ -80,9 +80,9 @@ return new ResponseEntity<>(Map.of("email","이미 존재하는 이메일 주소
             return ResponseEntity.status(401).body(response);
         }
     }
-    @PostMapping("logout")
-    public ResponseEntity<String> logout(){
-        //추후 추가 코딩 정보가 있으면 추가 될 수 있음
-        return ResponseEntity.ok("logout success");
-    }
+//    @PostMapping("logout")
+//    public ResponseEntity<String> logout(){
+//        //추후 추가 코딩 정보가 있으면 추가 될 수 있음
+//        return ResponseEntity.ok("logout success");
+//    }
 }
