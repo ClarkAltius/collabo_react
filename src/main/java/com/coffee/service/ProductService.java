@@ -15,4 +15,14 @@ public class ProductService {
     public List<Product> getProductList(){
         return this.productRepository.findProductByOrderByIdDesc();
     };
+
+    public boolean deleteProduct(Long id) {
+        if(productRepository.existsById(id)){ //해당 항목이 존재하면
+            this.productRepository.deleteById(id);
+            return true; //true means deletion successful in this case
+        }else{
+
+        }
+        return false;
+    }
 }

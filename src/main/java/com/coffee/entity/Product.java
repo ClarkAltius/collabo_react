@@ -27,7 +27,7 @@ public class Product {
     private String name;
     @Column(nullable = false)
     @Min(value=10, message = "재고 수량은 10개 이상이어야 합니다.")
-    @Max(value=3000, message = "재고 수량은 30개 이하여야 합니다.")
+    @Max(value=3000, message = "재고 수량은 3000개 이하여야 합니다.")
     private int stock;
     @Column(nullable = false)
     @Min(value=100, message = "가격은 100원 이상이어야 합니다.")
