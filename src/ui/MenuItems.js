@@ -13,7 +13,7 @@ function MenuItems({ appName, user, handleLogout }) {
             case 'ADMIN':
                 return (
                     <>
-                        <Nav.Link onClick={() => navigate(``)}>상품 등록</Nav.Link>
+                        <Nav.Link onClick={() => navigate(`/product/insert`)}>상품 등록</Nav.Link>
                         <Nav.Link onClick={handleLogout}>로그아웃</Nav.Link>
                     </>
                 )

@@ -7,6 +7,7 @@ import Homepage from "../pages/Homepage";
 import SignupPage from "../pages/SignupPage";
 import LoginPage from "../pages/LoginPage";
 import ProductList from "../pages/ProductList.js";
+import ProductInsertForm from "../pages/ProductInsertForm.js";
 
 
 function AppRoutes({ user, handleLoginSuccess }) {
@@ -22,6 +23,7 @@ function AppRoutes({ user, handleLoginSuccess }) {
             <Route path='/fruit' element={<FruitOne />} />
             {/** 로그인 여부에 따라 상품목록 페이지 다르게 보여야 함. user 프롭스 넘겨줌 */}
             <Route path='/product/list' element={<ProductList user={user} />} />
+            <Route path='/product/insert' element={<ProductInsertForm user={user} />} />
             <Route path='/fruit/list' element={<FruitList />} />
             <Route path='/element' element={<ElementOne />} />
             <Route path='/element/list' element={<ElementList />} />

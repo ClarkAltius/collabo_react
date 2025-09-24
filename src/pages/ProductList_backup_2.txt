@@ -3,7 +3,6 @@ import { Button, Card, Col, Container, Row } from "react-bootstrap";
 import { API_BASE_URL } from "../config/config";
 import axios from "axios";
 import { Link } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
 
 /*
 step01
@@ -38,7 +37,7 @@ function ProductList({ user, item }) {
 
     }, []); //empty dependency array means this runs only once on mount
 
-    const navigate = useNavigate();
+    const navigate = useState();
 
     const makeAdminButtons = (item) => {
         if (user?.role !== 'ADMIN') return null;
@@ -70,16 +69,13 @@ function ProductList({ user, item }) {
                         try {
                             await axios.delete(`${API_BASE_URL}/product/delete/${item.id}`);
                             alert(`'${item.name}' 상품을 성공적으로 삭제하셨습니다.`);
-
-                            setProducts(currentProducts => currentProducts.filter(product => product.id !== item.id)
-                            );
-
-                            navigate(`/product/list`);
+                            navigate(`product/list`);
 
 
                         } catch (error) {
                             console.log(error);
                             alert(`상품 삭제 실패: ${error.response.data || error.message}`)
+
                         }
                     }}
                 >
@@ -116,23 +112,22 @@ function ProductList({ user, item }) {
                             <Card.Body>
                                 <table style={{ width: '100%', borderCollapse: 'collapse', border: 'none' }}>
                                     {/**borderCollapse : 각 셀의 테두리를 합칠 것인지 별개로 보여줄지 설정하는 속성 */}
-                                    <tbody>
-                                        <tr>
-                                            <td style={{ width: '70%', padding: '4px', border: 'none' }}>
-                                                <Card.Title>{item.name}({item.id})</Card.Title>
+                                    <tr>
+                                        <td style={{ width: '70%', padding: '4px', border: 'none' }}>
+                                            <Card.Title>{item.name}({item.id})</Card.Title>
 
-                                            </td>
-                                            {/**rowSpan 속성은 행방향 병합시 사용 ↔ colSpan */}
-                                            <td rowSpan={2} style={{ padding: '4px', border: 'none', textAlign: 'center', verticalAlign: 'middle' }}>
-                                                {makeAdminButtons(item, user, navigate)}
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td style={{ width: '70%', padding: '4px', border: 'none' }}>
-                                                <Card.Text>가격: {item.price.toLocaleString()} 원</Card.Text>
-                                            </td>
-                                        </tr>
-                                    </tbody>
+                                        </td>
+                                        {/**rowSpan 속성은 행방향 병합시 사용 ↔ colSpan */}
+                                        <td rowSpan={2} style={{ padding: '4px', border: 'none', textAlign: 'center', verticalAlign: 'middle' }}>
+                                            {makeAdminButtons(item, user, navigate)}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style={{ width: '70%', padding: '4px', border: 'none' }}>
+                                            <Card.Text>가격: {item.price.toLocaleString()} 원</Card.Text>
+                                        </td>
+                                    </tr>
+
                                 </table>
                             </Card.Body>
                         </Card>
