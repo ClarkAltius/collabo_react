@@ -20,9 +20,14 @@ public class ProductService {
         if(productRepository.existsById(id)){ //해당 항목이 존재하면
             this.productRepository.deleteById(id);
             return true; //true means deletion successful in this case
-        }else{
-
+        }else{ //in case of not existant
+            return false;
         }
-        return false;
+
+    }
+
+    public void save(Product product) {
+        //save method is in the CRUD repository
+        this.productRepository.save(product);
     }
 }
