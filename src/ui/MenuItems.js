@@ -14,6 +14,7 @@ function MenuItems({ appName, user, handleLogout }) {
                 return (
                     <>
                         <Nav.Link onClick={() => navigate(`/product/insert`)}>상품 등록</Nav.Link>
+                        <Nav.Link onClick={() => navigate(`/product/update`)}>상품 수정</Nav.Link>
                         <Nav.Link onClick={handleLogout}>로그아웃</Nav.Link>
                     </>
                 )

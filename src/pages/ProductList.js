@@ -40,7 +40,7 @@ function ProductList({ user, item }) {
 
     const navigate = useNavigate();
 
-    const makeAdminButtons = (item) => {
+    const makeAdminButtons = (item, user, navigate) => {
         if (user?.role !== 'ADMIN') return null;
         return (
             <div className="d-flex justify-content-center">
@@ -50,7 +50,8 @@ function ProductList({ user, item }) {
                     size="sm"
                     onClick={(event) => {
                         event.stopPropagation();
-                        alert('수정');
+                        navigate(`/product/update/${item.id}`);
+                        alert(`[${item.id}]번 상품 수정. 수정 페이지로 이동합니다.`);
                     }}
                 >
                     수정

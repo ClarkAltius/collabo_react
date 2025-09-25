@@ -1,30 +1,59 @@
 import axios from "axios";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Form, Button, Container } from "react-bootstrap";
 import { API_BASE_URL } from "../config/config";
 import { useNavigate } from "react-router-dom";
+// //useParams 혹은 url에 들어있는 동적 파라미터 값을 챙길 때 사용
+
+import { useParams } from "react-router-dom";
+import App from "./Homepage";
 
 /*
-폼 양식 작성
+상품 수정 페이지입니다.
+상품 등록과 다른 점은 인풋컨트롤에 데이터베이스에 객체를 불러와서 populate 시킨다는 점입니다. useEffect 훅 사용
+
+기존 폼 양식 재활용
 각 컨트롤에 대한 change 이벤트 함수 구현 (ControlChange fuction)
+
+controlchange, fileselect 함수는 상품등록과 동일
 
 컨트롤 (input type)
 컨트롤 (combo type)
-FIleSelect 함수
-업로드할 이미지 선택에 대한 이벤트 함수 구현 (주의: post 전송방식. input 양식의 type="file"로 작성)
 
 SubmitAction 함수 : 컨트롤에 입력된 내용들을 백엔드로 전송
 */
 
-function ProductInsertForm() {
+function ProductUpdateForm() {
+
+    const { id } = useParams();
+    console.log(`수정 할 상품 번호: ${id}`);
+
     const navigate = useNavigate();
-    const comment = '상품 등록';
+    const comment = '상품 수정';
     const initial_value = {
         name: '', price: '', category: '', stock: '', image: '', description: ''
     }; //상품 객체 정보
-    //product 는 백엔드에 넘겨줄 상품 등록 정보를 담고 있는 객체.
+    //product 는 백엔드에 넘겨줄 상품 수정 정보를 담고 있는 객체.
     const [product, setProduct] = useState(initial_value);
+
+    //id 사용하여 기존 입력한 상품 가져오기
+    useEffect(() => {
+        const url = `${API_BASE_URL}/product/update/${id}`;
+        axios
+            .get(url)
+            .then((response) => {
+                setProduct(response.data);
+            })
+            .catch((error) => {
+                alert(`상품 [${id}]번 오류 발생 : ${error}`)
+                console.log(`상품 [${id}]의 정보를 읽어 오지 못했습니다.`)
+            });
+
+    }, []); //id 값이 변경될 때 마다 ㅗ하면을 re-render
+
     const [imageFile, setImageFile] = useState(null); // 실제 이미지 파일 객체를 저장
+
+
 
     //폼 양식에서 어떠한 컨트롤의 값이 변경되었습니다. 
     const ControlChange = (event) => {
@@ -65,6 +94,7 @@ function ProductInsertForm() {
     const SubmitAction = async (event) => {
         event.preventDefault();
         const formData = new FormData();
+        formData.append('id', product.id);
         formData.append('name', product.name);
         formData.append('price', product.price);
         formData.append('stock', product.stock);
@@ -74,14 +104,15 @@ function ProductInsertForm() {
 
         if (product.category === "-") {
             alert('카테고리를 선택하시오');
-            return;; //등록 중단
+            return;; //수정 중단
 
         } else {
 
         }
 
         try {
-            const url = `${API_BASE_URL}/product/insert`;
+            const url = `${API_BASE_URL}/product/update/${id}`;
+            // const url = `${API_BASE_URL}/product/update/`;
 
 
 
@@ -92,21 +123,21 @@ function ProductInsertForm() {
             // const parameters = {...product};
             // const config = { headers: { 'Content-Type': 'application/json' } };
 
-            const response = await axios.post(url, formData);
+            const response = await axios.put(url, formData);
 
-            console.log(`상품 등록: [${response.data}]`);
-            alert('상품이 성공적으로 등록되었습니다.');
+            console.log(`상품 수정: [${response.data}]`);
+            alert('상품이 성공적으로 수정되었습니다.');
 
-            //상품 등록 후 입력 컨트롤 초기화
+            //상품 수정 후 입력 컨트롤 초기화
             setProduct(initial_value);
 
-            //등록 직후 상품 목록 페이지로 이동
+            //수정 직후 상품 목록 페이지로 이동
 
             navigate(`/product/list`);
 
         } catch (error) {
             console.log(`오류 내용 : ${error}`);
-            alert('상품 등록에 실패하였습니다.')
+            alert('상품 수정에 실패하였습니다.')
         }
 
     }
@@ -192,4 +223,4 @@ function ProductInsertForm() {
     );
 }
 
-export default ProductInsertForm;
+export default ProductUpdateForm;
