@@ -24,6 +24,7 @@ function ProductInsertForm() {
     }; //상품 객체 정보
     //product 는 백엔드에 넘겨줄 상품 등록 정보를 담고 있는 객체.
     const [product, setProduct] = useState(initial_value);
+    const [imageFile, setImageFile] = useState(null); // 실제 이미지 파일 객체를 저장
 
     //폼 양식에서 어떠한 컨트롤의 값이 변경되었습니다. 
     const ControlChange = (event) => {
@@ -36,7 +37,9 @@ function ProductInsertForm() {
 
     const FileSelect = (event) => {
         const { name, files } = event.target;
-        const file = files[0];
+        const file = event.target.files[0];
+        setImageFile(file); // 실제 파일 객체를 state에 저장
+
 
         //FileReader는 웹 브라우저에서 제공하는 내장 객체. 파일 읽기에 사용.
         //js에서 파일을 읽어서 이를 데이터로 처리하는 데 사용. 
@@ -59,10 +62,20 @@ function ProductInsertForm() {
 
     }
 
-    const SubmitAction = (event) => {
+    const SubmitAction = async (event) => {
         event.preventDefault();
+        const formData = new FormData();
+        formData.append('name', product.name);
+        formData.append('price', product.price);
+        formData.append('stock', product.stock);
+        formData.append('description', product.description);
+        formData.append('category', product.category);
+        formData.append('imageFile', imageFile); // 2. Append the actual file object
+
         try {
             const url = `${API_BASE_URL}/product/insert`;
+
+
 
             //참조 공유. 2 변수가 동일한 곳을 참조
             const parameters = product;
@@ -71,7 +84,7 @@ function ProductInsertForm() {
             // const parameters = {...product};
             const config = { headers: { 'Content-Type': 'application/json' } };
 
-            const response = axios.post(url, parameters, config);
+            const response = await axios.post(url, FormData);
 
             console.log(`상품 등록: [${response.data}]`);
             alert('상품이 성공적으로 등록되었습니다.');
@@ -153,6 +166,7 @@ function ProductInsertForm() {
                 <Form.Group className="mb-3">
                     <Form.Label>카테고리</Form.Label>
                     <Form.Select
+                        name="category"
                         onChange={ControlChange}
                         required>
                         {/** 자바의 Enum 열거형 타입에서 사용한 대문자를 반드시 사용해야 작동함 */}
