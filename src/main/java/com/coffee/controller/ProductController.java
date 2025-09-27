@@ -135,6 +135,7 @@ public class ProductController {
                         .status(HttpStatus.INTERNAL_SERVER_ERROR) // Use 500 for server-side exceptions
                         .body(Map.of("message", e.getMessage(),"error","Error product update failed"));
             }
+
         }
     }
 //Legacy
@@ -200,4 +201,15 @@ public class ProductController {
 //            return base64Image;
 //        }
 //    }
+
+    @GetMapping("/detail/{id}")
+    public ResponseEntity<Product> detail(@PathVariable Long id){
+        Product product = this.productService.getProductById(id);
+
+        if(product == null){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }else{//404 response
+            return ResponseEntity.ok(product);
+        }
+    }
 }
