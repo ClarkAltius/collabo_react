@@ -1,19 +1,23 @@
 package com.coffee.controller;
 
 import com.coffee.dto.CartProductDto;
-import com.coffee.entity.*;
+import com.coffee.dto.CartProductResponseDto;
+import com.coffee.entity.Cart;
+import com.coffee.entity.CartProduct;
+import com.coffee.entity.Member;
+import com.coffee.entity.Product;
 import com.coffee.service.CartProductService;
 import com.coffee.service.CartService;
 import com.coffee.service.MemberService;
 import com.coffee.service.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 
 /**
@@ -35,6 +39,10 @@ public class CartController {
     private final ProductService productService;
     private final CartService cartService;
     private final CartProductService cartProductService;
+    private MemberService memberSerivce;
+
+
+
 
 
     @PostMapping("/insert")
@@ -75,5 +83,64 @@ public class CartController {
         //재고수량 차감 x (아직 판매가 이루어지지 않았음으로)
 
         return ResponseEntity.ok("요청하신 상품이 장바구니에 추가되었습니다.");
+
+        }
+
+    @GetMapping("/{memberId}")
+    public ResponseEntity<List<CartProductResponseDto>> getCartProducts(@PathVariable("memberId") Long memberId) {
+        // 1. Find the cart directly using the memberId. This is more efficient.
+        Optional<Cart> cartOptional = cartService.findCartByMemberId(memberId);
+
+        // 2. Check if the cart exists. If not, the user has an empty cart.
+        if (cartOptional.isEmpty()) {
+            // 3. Return a 200 OK status with an empty list. This is safe and correct.
+            return ResponseEntity.ok(Collections.emptyList());
+        }
+
+        // 4. If the cart exists, get the list of products from it.
+        Cart cart = cartOptional.get();
+        List<CartProduct> cartProducts = cart.getCartProducts();
+
+        // 5. Convert the list of CartProduct entities to your safe DTOs.
+        List<CartProductResponseDto> responseDtoList = cartProducts.stream()
+                .map(CartProductResponseDto::new)
+                .collect(Collectors.toList());
+
+        System.out.println("Returning " + responseDtoList.size() + " products for member " + memberId);
+
+        // 6. Return the DTO list.
+        return ResponseEntity.ok(responseDtoList);
+
+
+    }
+    //http://localhost:9000/cart/edit/100?quantity=10
+    @PatchMapping("/edit/{cartProductId}")
+    public ResponseEntity<String> updateCartProduct(
+            @PathVariable Long cartProductId,
+            @RequestParam(required = false) Integer quantity){
+        System.out.println("카트 상품 아이디: " + cartProductId);
+        System.out.println("변경 할 갯수: " + quantity);
+
+        String message = null;
+
+        if(quantity == null){
+            message = "장바구니 품목은 최소 1개 이상이어야 합니다";
+            return ResponseEntity.badRequest().body(message);
+        }
+
+        Optional<CartProduct> cartProductOptional = this.cartProductService.findCartProductById(cartProductId);
+        if(cartProductOptional.isEmpty()){
+            message = "장바구니 품목을 찾을 수 없습니다.";
+            return ResponseEntity.badRequest().body(message);
+        }
+
+        CartProduct cartProduct = cartProductOptional.get();
+        cartProduct.setQuantity(quantity); //기존 내용 덮어쓰기
+
+        cartProductService.saveCartProduct(cartProduct);
+
+        message = "카트 상품 [" +cartProductId + "]이 " + quantity + "개로 수정되었습니다.";
+
+        return ResponseEntity.ok(message);
     }
 }
