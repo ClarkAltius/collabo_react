@@ -1,4 +1,4 @@
-package com.coffee.entity;
+package com.coffee.dto;
 
 import lombok.Getter;
 import lombok.Setter;
