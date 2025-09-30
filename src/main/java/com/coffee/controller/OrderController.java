@@ -6,6 +6,7 @@ import com.coffee.entity.Member;
 import com.coffee.entity.Order;
 import com.coffee.entity.OrderProduct;
 import com.coffee.entity.Product;
+import com.coffee.service.CartProductService;
 import com.coffee.service.MemberService;
 import com.coffee.service.OrderService;
 import com.coffee.service.ProductService;
@@ -28,6 +29,7 @@ public class OrderController {
     private final OrderService orderService;
     private final MemberService memberService;
     private final ProductService productService;
+    private final CartProductService cartProductService;
 
     //리액트의 카트목록, 주문하기 버튼을 눌러 주문 시도
     @PostMapping("")  //CartList.js 파일의 makeOrder()함수와 연관 있습니다.
@@ -74,6 +76,15 @@ public class OrderController {
 
             //상품 재고수량 차감하기
             product.setStock(product.getStock() - item.getQuantity());
+            Long cartProductId = item.getCartProductId() ;
+            //System.out.println("cartProductId : " + cartProductId);
+
+            if(cartProductId != null){ // 장바구니 내역에서 `주문하기` 버튼을 클릭한 경우에 해당함
+                cartProductService.deleteCartProductById(cartProductId);
+
+            }else{
+                System.out.println("상품 상세 보기에서 클릭하셨군요.");
+            }
         }
 
 
