@@ -11,6 +11,7 @@ import ProductInsertForm from "../pages/ProductInsertForm.js";
 import ProductUpdateForm from "../pages/ProductUpdateForm.js";
 import ProductDetail from "../pages/ProductDetail.js";
 import CartList from "../pages/CartList.js";
+import OrderList from "../pages/OrderList.js";
 
 
 function AppRoutes({ user, handleLoginSuccess }) {
@@ -25,6 +26,7 @@ function AppRoutes({ user, handleLoginSuccess }) {
             <Route path='/member/login' element={<LoginPage setUser={handleLoginSuccess} />} />
             <Route path='/fruit' element={<FruitOne />} />
             <Route path='/cartlist' element={<CartList user={user} />} />
+            <Route path='/orderlist' element={<OrderList user={user} />} />
             {/** 로그인 여부에 따라 상품목록 페이지 다르게 보여야 함. user 프롭스 넘겨줌 */}
             <Route path='/product/list' element={<ProductList user={user} />} />
             <Route path='/product/insert' element={<ProductInsertForm user={user} />} />

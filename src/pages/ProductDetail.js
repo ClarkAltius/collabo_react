@@ -99,7 +99,36 @@ function ProductDetail({ user }) {
         }
         // alert(`${product.name} ${quantity} 개를 장바구니에 담기`)
     }
+    const buyNow = async () => {
+        if (quantity < 1) {
+            alert('수량을 하나 이상 선택해주세요.');
+            return;
+        }
 
+        try {
+            const url = `${API_BASE_URL}/order`;
+            //주의) paratmeters 작성시 key 이름은 OrderDto의 변수이름과 동일하게 작성해야함
+            const parameters = {
+                memberId: user.id,
+                status: 'PENDING',
+                orderItems: [{
+                    productId: product.id,
+                    quantity: quantity
+                }]
+            };
+            console.log('주문 할 데이터 정보');
+            console.log(parameters);
+
+            const response = await axios.post(url, parameters);
+            console.log(response.data);
+            alert(`${product.name} 상품 ${quantity}개를 주문하였습니다.`);
+            navigate('/product/list');
+
+        } catch (error) {
+            console.log('주문 기능 실패 에러');
+            console.log(error);
+        }
+    };
 
     return (
         <Container className="my-4">
@@ -185,7 +214,15 @@ function ProductDetail({ user }) {
                             >
                                 장바구니
                             </Button>
-                            <Button variant="danger" className="me-3 px-4">
+                            <Button variant="danger" className="me-3 px-4" onClick={() => {
+                                if (!user) {
+                                    alert('로그인해주세요');
+                                    return navigate('/member/login');
+
+                                } else {
+                                    buyNow();
+                                }
+                            }}>
                                 구매하기
                             </Button>
                         </div>
