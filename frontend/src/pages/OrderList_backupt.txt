@@ -1,0 +1,66 @@
+import { useEffect, useState } from "react";
+import { Alert, Container, Spinner } from "react-bootstrap";
+import { API_BASE_URL } from "../config/config";
+import axios from "axios";
+
+function OrderList({ user }) {
+    //loading 이 true 일 경우 현재 데이터를 읽고 있는 중입니다.
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(''); //오류정보 저장용 state
+    const [orders, setOrders] = useState([]); //주문 목록 저장용 state. 초기값은 빈 array
+    useEffect(() => {
+        //유저가 아니라면 '로그인해' 표기
+        if (!user) {
+            setError('로그인 해 주세요');
+            setLoading(false);
+            return;
+        }
+
+        const fetchOrders = async () => {
+            try {
+                const url = `${API_BASE_URL}/order/list`;
+                const parameters = { params: { memberId: user.id } };
+                const response = await axios.get(url, parameters);
+                setOrders(response.data);
+            } catch (error) {
+                setError('주문 목록을 불러오는 데 실패했습니다.');
+                console.log(error);
+
+            } finally {
+                setLoading(false);
+            };
+        };
+
+        fetchOrders(); //함수 호출
+
+    }, [user])
+
+    if (loading) {
+        return (
+            <div className="d-flex justify-content-center align-items-center p-5">
+                <Spinner animation="border" role="status">
+                    <span className="visually-hidden">주문 목록을 불러오는 중입니다.</span>
+                </Spinner>
+            </div>
+        );
+    }
+
+    if (error) {
+        return (
+            <Container className="my-4">
+                <Alert variant="danger">{error}</Alert>
+            </Container>
+        );
+    }
+
+    return (
+        <Container className="my-4">
+            //this is the title page
+            <h1 className="my-4">주문 내역</h1>
+            이전에 {orders.length}개 주문하셨습니다.
+
+        </Container>
+    );
+}
+
+export default OrderList;

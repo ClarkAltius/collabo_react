@@ -14,6 +14,7 @@ function MenuItems({ appName, user, handleLogout }) {
                 return (
                     <>
                         <Nav.Link onClick={() => navigate(`/product/insert`)}>상품 등록</Nav.Link>
+                        <Nav.Link onClick={() => navigate(`/order/list`)}>주문내역</Nav.Link> {/* 관리자는 모든 유저의 주문내역 열람 가능*/}
                         <Nav.Link onClick={() => navigate(`/product/update`)}>상품 수정</Nav.Link>
                         <Nav.Link onClick={handleLogout}>로그아웃</Nav.Link>
                     </>
@@ -22,7 +23,7 @@ function MenuItems({ appName, user, handleLogout }) {
                 return (
                     <>
                         <Nav.Link onClick={() => navigate(`/cartlist`)}>장바구니</Nav.Link>
-                        <Nav.Link onClick={() => navigate(`/orderlist`)}>주문내역</Nav.Link>
+                        <Nav.Link onClick={() => navigate(`/order/list`)}>주문내역</Nav.Link>
                         <Nav.Link onClick={handleLogout}>로그아웃</Nav.Link>
                     </>
                 )
@@ -41,6 +42,7 @@ function MenuItems({ appName, user, handleLogout }) {
         <Navbar bg="dark" variant="dark" expand="lg">
             <Container>
                 <Navbar.Brand href='/'>{appName}</Navbar.Brand>
+                <Navbar.Brand>{user?.name}</Navbar.Brand>
                 <Nav className="me-auto">
                     {/* 하이퍼링크 : Nav.Link는 다른 페이지로 이동할 때 사용됩니다.  */}
                     <Nav.Link onClick={() => navigate(`/product/list`)}>상품 보기</Nav.Link>
