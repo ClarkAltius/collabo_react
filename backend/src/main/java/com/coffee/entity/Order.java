@@ -4,12 +4,13 @@ import com.coffee.constant.OrderStatus;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-@Getter @Setter
+@Getter @Setter @ToString
 @Entity
 @Table(name="orders") //order는 데이터베이스 전용 키워드
 public class Order { //주문 관련 entity
@@ -28,5 +29,7 @@ public class Order { //주문 관련 entity
     private List<OrderProduct> orderProducts = new ArrayList<>();
 
     private LocalDate orderdate;
+
+    @Enumerated(EnumType.STRING)
     private OrderStatus status;
 }
