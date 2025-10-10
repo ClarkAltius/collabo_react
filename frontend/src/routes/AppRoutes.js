@@ -26,12 +26,11 @@ function AppRoutes({ user, handleLoginSuccess }) {
             <Route path='/member/login' element={<LoginPage setUser={handleLoginSuccess} />} />
             <Route path='/fruit' element={<FruitOne />} />
             <Route path='/cartlist' element={<CartList user={user} />} />
-            <Route path='/orderlist' element={<OrderList user={user} />} />
+            <Route path='/order/list' element={<OrderList user={user} />} />
             {/** 로그인 여부에 따라 상품목록 페이지 다르게 보여야 함. user 프롭스 넘겨줌 */}
             <Route path='/product/list' element={<ProductList user={user} />} />
             <Route path='/product/insert' element={<ProductInsertForm user={user} />} />
 
-            <Route path='/product/detail/:id' element={<ProductDetail user={user} />} />
             {/**미 로그인 시 장바구니, 구매하기 비활성화 위해 user를 프롭스로 넘겨준다 */}
             <Route path='/product/detail/:id' element={<ProductDetail user={user} />} />
             {/**기호 :id 는 변수처럼 동작하는 매개 변수. ProductUpdateForm.js 파일에서 참조 */}
