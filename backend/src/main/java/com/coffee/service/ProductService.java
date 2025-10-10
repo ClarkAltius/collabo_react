@@ -4,6 +4,8 @@ import com.coffee.entity.Product;
 import com.coffee.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -61,7 +63,10 @@ public class ProductService {
             return productRepository.findAll();
         }
 
+    public Page<Product> listProducts(Pageable pageable) {
+        return this.productRepository.findAll(pageable);
     }
+}
 
 
 

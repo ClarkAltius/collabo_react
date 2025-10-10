@@ -4,6 +4,10 @@ import com.coffee.entity.Product;
 import com.coffee.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -26,11 +30,11 @@ public class ProductController {
     @Autowired
     private ProductService productService;
 
-    @GetMapping("/list")
-    public List<Product> list(){
-        List<Product> products = this.productService.getProductList();
-        return products;
-    }
+//    @GetMapping("/list")
+//    public List<Product> list(){
+//        List<Product> products = this.productService.getProductList();
+//        return products;
+//    }
 
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<String> delete(@PathVariable Long id){
@@ -220,6 +224,22 @@ public class ProductController {
     @GetMapping("")
     public List<Product> getProductsByFilter(@RequestParam(required = false) String filter){
         return productService.getProductsByFilter(filter);
+    }
+    @GetMapping("/list") //페이징 관련 파라미터 사용하여 상품 목록 조회
+    public ResponseEntity<Page<Product>> listProducts(
+            @RequestParam(defaultValue = "0") int pageNumber,
+            @RequestParam(defaultValue = "6") int pageSize
+    ){
+        System.out.println("pageNumber: " + pageNumber + "pageSize: " + pageSize);
+
+        //현재 페이지는 pageNumber. 페이지당 보여줄 갯수는 pageSize
+        //상품번호가 큰 것 부터 정렬
+        Sort mysort = Sort.by(Sort.Direction.DESC, "id");
+        Pageable pageable = PageRequest.of(pageNumber, pageSize, mysort);
+
+        Page<Product> productPage = productService.listProducts(pageable);
+
+        return ResponseEntity.ok(productPage);
     }
 
 }
