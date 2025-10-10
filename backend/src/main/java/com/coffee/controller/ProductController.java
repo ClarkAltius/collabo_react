@@ -137,7 +137,11 @@ public class ProductController {
             }
 
         }
+
+
     }
+
+
 //Legacy
 //    @PutMapping("/update/{id}")
 //    public ResponseEntity<?> putUpdate(@PathVariable Long id, @ModelAttribute Product updatedProduct, @RequestParam("imageFile") MultipartFile imageFile){
@@ -212,4 +216,10 @@ public class ProductController {
             return ResponseEntity.ok(product);
         }
     }
+
+    @GetMapping("")
+    public List<Product> getProductsByFilter(@RequestParam(required = false) String filter){
+        return productService.getProductsByFilter(filter);
+    }
+
 }

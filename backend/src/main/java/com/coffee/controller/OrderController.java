@@ -1,7 +1,10 @@
 package com.coffee.controller;
 
+import com.coffee.constant.OrderStatus;
+import com.coffee.constant.Role;
 import com.coffee.dto.OrderDto;
 import com.coffee.dto.OrderItemDto;
+import com.coffee.dto.OrderResponseDto;
 import com.coffee.entity.Member;
 import com.coffee.entity.Order;
 import com.coffee.entity.OrderProduct;
@@ -10,11 +13,9 @@ import com.coffee.service.MemberService;
 import com.coffee.service.OrderService;
 import com.coffee.service.ProductService;
 import lombok.RequiredArgsConstructor;
+import org.aspectj.weaver.ast.Or;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -36,7 +37,7 @@ public class OrderController {
 
         //Create Member Object
         Optional<Member> optionalMember = memberService.findMemberById(dto.getMemberId());
-        if(!optionalMember.isPresent()){
+        if(optionalMember.isEmpty()){
             throw new RuntimeException("회원이 존재하지 않습니다.");
         }
         Member member = optionalMember.get();
@@ -75,8 +76,6 @@ public class OrderController {
             //상품 재고수량 차감하기
             product.setStock(product.getStock() - item.getQuantity());
         }
-
-
         order.setOrderProducts(orderProductList);
 
         //Save Order object
@@ -84,6 +83,97 @@ public class OrderController {
 
         String message = "주문이 완료되었습니다";
         return ResponseEntity.ok(message);
+
+    }
+    //특정 회원의 주문 정보를 조회합니다.
+    @GetMapping("/list")
+    public ResponseEntity<?> getOrderList(@RequestParam Long memberId, @RequestParam Role role) {
+        System.out.println("로그인한 유저 ID: " + memberId);
+        System.out.println("로그인 한 사람 계정분류: " + role);
+
+        List<Order> orders = null;
+        if (role == Role.ADMIN) {
+            System.out.println("관리자");
+            orders = orderService.findAllOrders(OrderStatus.PENDING);
+        } else {
+            System.out.println("일반 유저");
+            orders = orderService.findByMemberIdAndStatusOrderByIdDesc(memberId, OrderStatus.PENDING);
+        }
+
+        System.out.println("주문 건수: " + orders.size());
+
+        List<OrderResponseDto> responseDtos = new ArrayList<>();
+        for (Order bean : orders) {
+            OrderResponseDto dto = new OrderResponseDto();
+
+            //주문 기초 정보 세팅
+            dto.setOrderId(bean.getId());
+            dto.setOrderDate(bean.getOrderdate());
+            dto.setStatus(bean.getStatus().name());
+
+            //주문상품 여럿에 대한 세팅
+            List<OrderResponseDto.OrderItem> orderItems = new ArrayList<>();
+
+            for (OrderProduct op : bean.getOrderProducts()) {
+                OrderResponseDto.OrderItem item
+                        = new OrderResponseDto.OrderItem(op.getProduct().getName(), op.getQuantity());
+                orderItems.add(item);
+            }
+            dto.setOrderItems(orderItems);
+            responseDtos.add(dto);
+        }
+        return ResponseEntity.ok(responseDtos);
     }
 
+//    @GetMapping("/update/{orderId}")
+//    public String ddd(PathVariable Long orderId){
+//        return null;
+//    }
+
+    ///update/status/${bean.orderId}?status=${newStatus}
+
+    @PutMapping("/update/status/{orderId}")
+    public ResponseEntity<String> statusChange(@PathVariable Long orderId, @RequestParam OrderStatus status){
+        System.out.println("수정할 항목 아이디: " + orderId);
+        System.out.println("수정할 주문 상태: " + status);
+
+        int affected = -1;
+        affected = orderService.updateOrderStatus(orderId, status);
+        System.out.println("데이터베이스에 반영 된 행 갯수" + affected);
+        String message = "송장번호 " + orderId + "의 주문상태가 변경되었습니다.";
+        return ResponseEntity.ok(message);
+    }
+
+    //삭제요청
+
+
+    @DeleteMapping("/delete/{orderId}")
+    public ResponseEntity<String> cancelOrder(@PathVariable Long orderId){
+        if(!orderService.existsById(orderId)){
+            return ResponseEntity.notFound().build();
+
+        }
+
+        //재고수량 증가를 위한 코드
+        Optional<Order> orderOptional = orderService.findOrderById(orderId);
+        if(orderOptional.isEmpty()){
+            return ResponseEntity.notFound().build();
+        }
+        Order order = orderOptional.get();
+
+        //주문 상품을 반복하면서 재고 수량을 더해 주어야 합니다.
+        for(OrderProduct op : order.getOrderProducts()){
+            Product product = op.getProduct();
+            int quantity = op.getQuantity();
+
+            //기존 재고에 취소된 수량 추가
+            product.setStock(product.getStock() + quantity);
+            productService.save(product);
+        }
+
+
+        orderService.deleteById(orderId);
+        String message = "주문이 취소되었습니다.";
+        return ResponseEntity.ok(message);
+    }
 }
