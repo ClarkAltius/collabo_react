@@ -1,6 +1,7 @@
 package com.coffee.entity;
 
 import com.coffee.constant.Role;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -40,7 +41,8 @@ public class Member {
     private String address;
     @Enumerated(EnumType.STRING) //칼럼에 문자열 형식으로 데이터가 들어감
     private Role role; //USER of ADMIN
-    private LocalDate regdate; //등록일자
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private LocalDate regdate; //등록일자. 원활한 JSON 변경을 위해 Jackson 라이브러리 필요.
 
 
 
