@@ -55,6 +55,14 @@ public class SecurityConfig {
         configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000"));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("*"));
+
+        /*
+           백엔드: 리액트에서 쿠키 세션 정보를 넘기면 허용하기 위한 옵션
+           프론트: axios 사용시 반드시 withCrendntials:true 옵션 명시할것
+
+           인증 성공시 백엔드가 프론트에 JSESSIONID 라는 이름의 데이터를 넘겨주고 쿠키 형태로 저장
+         */
+
         configuration.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();

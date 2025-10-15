@@ -6,6 +6,7 @@ import com.coffee.entity.Product;
 import com.coffee.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -47,6 +48,10 @@ public class ProductController {
             } else {
                 return ResponseEntity.ok(id + "번 상품은 존재하지 않습니다.");
             }
+        } catch(DataIntegrityViolationException err){
+            String message = "이미 매출이 발생한 상품은 삭제 할 수 없습니다./n확인해주세요";
+            return ResponseEntity.badRequest().body(message);
+
         } catch(Exception err){
             return ResponseEntity.internalServerError().body("오류 발생: " + err.getMessage());
         }
