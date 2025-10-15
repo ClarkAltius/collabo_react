@@ -3,48 +3,53 @@ import { Container, Row, Card, Form, Col, Button, Alert } from "react-bootstrap"
 import { API_BASE_URL } from "../config/config";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
+
 function LoginPage({ setUser }) {
-    //setUser: 사용자 정보를 저장하기 위한 setter 메소드
-    //파라미터 관련 스테이트
     const [password, setPassword] = useState('');
     const [email, setEmail] = useState('');
 
-    //  폼 유효성 검사(Form Validation Check) 관련 state 정의
-    // 입력 방식에 문제 발생시 값을 저장 할 곳.
-    const [errors, setErrors] = useState('');
+    // [MODIFIED] The 'errors' state is now initialized as an object {}.
+    // This makes error handling more consistent and robust.
+    const [errors, setErrors] = useState({});
 
     const navigate = useNavigate();
 
     const LoginAction = async (event) => {
         event.preventDefault();
+        // Clear previous errors on a new submission.
+        setErrors({});
         try {
-
             const url = `${API_BASE_URL}/member/login`;
-            const parameter = { email, password };
-            //스프링부트가 넘겨주는 정보는 Map<String, Object> 타입입니다. 
-            const response = await axios.post(url, parameter);
 
-            //message에는 로그인 성공 여부 알리는 내용, member에는 로그인 한 사람의 객체 정보가 반환
+            const parameters = new URLSearchParams();
+            parameters.append('email', email);
+            parameters.append('password', password);
+
+            const response = await axios.post(url, parameters, {
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                withCredentials: true
+            });
+
             const { message, member } = response.data;
 
-            if (message === '로그인 성공') { //자바에서 map.put("message", "로그인 성공") 으로 만들 예정
+            if (message === '로그인 성공') {
                 console.log('로그인한 유저의 정보');
                 console.log(member);
-                //로그인 성공시 사용자 정보를 저장해야합니다. 
                 setUser(member);
-                //로그인 성공 후 홈페이지 이동
                 navigate(`/`);
-
-            } else { //로그인 실패 
-                console.log('로그인 실패 front')
-                setErrors(message);
-
+            } else {
+                // This case is unlikely if the backend uses proper HTTP status codes for errors.
+                setErrors({ general: message || 'An unknown error occurred.' });
             }
         } catch (error) {
-            if (error.response) {
-                setErrors(error.response.data.message || '로그인 실패');
+            // [MODIFIED] The catch block now handles errors by setting a 'general' error message
+            // in the 'errors' object. This avoids type inconsistencies.
+            if (error.response && error.response.data && error.response.data.message) {
+                setErrors({ general: error.response.data.message });
             } else {
-                setErrors('로그인 중 오류가 발생했습니다.');
+                setErrors({ general: '로그인 중 오류가 발생했습니다.' });
             }
         }
     }
@@ -56,8 +61,8 @@ function LoginPage({ setUser }) {
                     <Card>
                         <Card.Body>
                             <h2 className="text-center mb-4">로그인</h2>
-                            {/** 일반 오류 발생시 사용자에게 alert 메시지  */}
-                            {errors && <Alert variant="danger">{errors}</Alert>}
+                            {/* [MODIFIED] The Alert now displays the 'general' error message. */}
+                            {errors.general && <Alert variant="danger">{errors.general}</Alert>}
                             <Form onSubmit={LoginAction}>
                                 <Form.Group className="mb-3">
                                     <Form.Label>이메일</Form.Label>
@@ -67,7 +72,6 @@ function LoginPage({ setUser }) {
                                         value={email}
                                         onChange={(event) => setEmail(event.target.value)}
                                         required
-
                                     />
                                 </Form.Group>
 
@@ -79,12 +83,13 @@ function LoginPage({ setUser }) {
                                         value={password}
                                         onChange={(event) => setPassword(event.target.value)}
                                         required
+                                        // [MODIFIED] This now checks for a 'password' specific error.
+                                        // It will be false for general login errors, which is correct.
                                         isInvalid={!!errors.password}
                                     />
                                     <Form.Control.Feedback type="invalid">
                                         {errors.password}
                                     </Form.Control.Feedback>
-
                                 </Form.Group>
 
                                 <Row>

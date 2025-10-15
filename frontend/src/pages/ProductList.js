@@ -5,6 +5,7 @@ import axios from "axios";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import { Pagination } from "react-bootstrap";
+import { Form } from "react-bootstrap";
 
 /*
 step01
@@ -29,6 +30,10 @@ function ProductList({ user, item }) {
         beginPage: 0,
         endPage: 0,
         pagingStatus: '',
+        searchDateType: 'all', //기간 검색
+        category: '', //카테고리 검색
+        searchMode: '', //name or description
+        searchKeyword: '' //키워드 입력 상자
 
     });
 
@@ -55,7 +60,12 @@ pagingStatus : "pageNumber/ totalPages 페이지"
             params: {
                 pageNumber: paging.pageNumber,
                 pageSize: paging.pageSize,
-            }
+                searchDateType: paging.searchDateType, //기간 검색
+                category: paging.category, //카테고리 검색
+                searchMode: paging.searchMode, //name or description
+                searchKeyword: paging.searchKeyword //키워드 입력 상자
+            },
+            withCredentials: true
         };
         axios
             .get(url, parameters)
@@ -98,7 +108,6 @@ pagingStatus : "pageNumber/ totalPages 페이지"
                         endPage: endPage,
                         pagingStatus: pagingStatus,
                     }
-
                 });
 
             })
@@ -106,7 +115,11 @@ pagingStatus : "pageNumber/ totalPages 페이지"
                 console.log(error)
             });
 
-    }, [paging.pageNumber]); //empty dependency array means this runs only once on mount. Now that paging.pageNumber is here, it refreshes every time it changes.
+    }, [paging.pageNumber,
+    paging.searchDateType, //기간 검색
+    paging.category, //카테고리 검색
+    paging.searchMode, //name or description
+    paging.searchKeyword]); //empty dependency array means this runs only once on mount. Now that paging.pageNumber is here, it refreshes every time it changes.
 
     const navigate = useNavigate();
 
@@ -171,6 +184,74 @@ pagingStatus : "pageNumber/ totalPages 페이지"
                     </Button>
                 )}
             </Link>
+            <Form className="p-3">
+                <Row className="mb-3">
+                    <Col md={2}>
+                        <Form.Select
+                            name="searchDateType"
+                            value={paging.searchDateType}
+                            onChange={(e) => setPaging((previous) => ({ ...previous, searchDateType: e.target.value }))}>
+                            <option value='all'> 전체 기간 </option>
+                            <option value='1d'> 1일 </option>
+                            <option value='1w'> 1주 </option>
+                            <option value='1m'> 1달 </option>
+                            <option value='6m'> 반년 </option>
+                        </Form.Select>
+                    </Col>
+                    {/**카테고리 선택 */}
+                    <Col md={2}>
+                        <Form.Select
+                            name="category"
+                            value={paging.category}
+                            onChange={(e) => setPaging((previous) => ({ ...previous, category: e.target.value }))}>
+                            <option value='all'> 카테고리 선택 </option>
+                            <option value='BREAD'> 빵 </option>
+                            <option value='CAKE'> 케이크 </option>
+                            <option value='BEVERAGE'> 음료 </option>
+                        </Form.Select>
+                    </Col>
+                    {/**상품 설명 */}
+                    <Col md={2}>
+                        <Form.Select
+                            name="searchMode"
+                            value={paging.searchMode}
+                            onChange={(e) => setPaging((previous) => ({ ...previous, searchMode: e.target.value }))}>
+                            <option value='all'> 전체 검색 </option>
+                            <option value='name'> 상품명 </option>
+                            <option value='description'> 상품 설명 </option>
+                        </Form.Select>
+                    </Col>
+                    {/** 검색창 */}
+                    <Col md={4}>
+                        <Form.Control
+                            name="searchKeyword"
+                            type="text"
+                            value={paging.searchKeyword}
+                            placeholder="검색어를 입력해주세요"
+                            onChange={(e) => {
+                                e.preventDefault();
+                                setPaging((previous) => ({ ...previous, searchKeyword: e.target.value }));
+                            }} />
+                    </Col>
+                    {/** 현 페이지 */}
+                    <Col md={2}>
+                        <Form.Control
+                            as="input"
+                            type="text"
+                            value={paging.pagingStatus}
+                            disabled
+                            style={{
+                                fontSize: '20px',
+                                backgroundColor: '#f0f0f0',
+                                textAlign: 'center', // 텍스트 가운데 정렬
+                                width: '100%', // 필요한 너비 설정
+                                margin: '0 auto', // 가운데 정렬을 위한 자동 여백
+                            }}
+                        />
+                    </Col>
+
+                </Row>
+            </Form>
             {/**필드 검색 영역 */}
             {/**자료 보여주는 영역 */}
             <Row>
