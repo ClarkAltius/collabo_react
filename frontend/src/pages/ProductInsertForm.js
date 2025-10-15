@@ -1,5 +1,5 @@
 import axios from "axios";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Form, Button, Container } from "react-bootstrap";
 import { API_BASE_URL } from "../config/config";
 import { useNavigate } from "react-router-dom";
@@ -16,9 +16,23 @@ FIleSelect 함수
 SubmitAction 함수 : 컨트롤에 입력된 내용들을 백엔드로 전송
 */
 
-function ProductInsertForm() {
+function ProductInsertForm({ user }) {
+
     const navigate = useNavigate();
     const comment = '상품 등록';
+
+    //stop direct access through address bar
+    useEffect(() => {
+        if (!user || user.role !== 'ADMIN') {
+            alert(`You need ADMIN ACCESS to view ${comment} page`);
+            navigate('/');
+        }
+
+    }, [user, navigate]);
+
+
+
+
     const initial_value = {
         name: '', price: '', category: '', stock: '', image: '', description: ''
     }; //상품 객체 정보

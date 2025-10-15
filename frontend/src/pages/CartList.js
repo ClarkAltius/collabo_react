@@ -32,7 +32,7 @@ function CartList({ user, product }) {
             if (user && user.id) {
                 try {
                     // Call the new GET endpoint you created in the backend
-                    const response = await axios.get(`${API_BASE_URL}/cart/${user.id}`);
+                    const response = await axios.get(`${API_BASE_URL}/cart/${user.id}`, { withCredentials: true });
 
                     // The response.data should be the list of CartProduct objects
                     setCartProducts(response.data);
@@ -107,7 +107,7 @@ function CartList({ user, product }) {
 
         try {//실제 주소 http://localhost:9000/cart/edit/100?quantity=10
             const url = `${API_BASE_URL}/cart/edit/${cartProductId}?quantity=${quantity}`;
-            const response = await axios.patch(url);
+            const response = await axios.patch(url, {}, { withCredentials: true });
             console.log(response.data || '');
             setCartProducts((previous) => {
                 const updatedProducts = previous.map((product) =>

@@ -23,13 +23,22 @@ controlchange, fileselect 함수는 상품등록과 동일
 SubmitAction 함수 : 컨트롤에 입력된 내용들을 백엔드로 전송
 */
 
-function ProductUpdateForm() {
+function ProductUpdateForm({ user }) {
+    const navigate = useNavigate();
+    const comment = '상품 수정';
+
+    useEffect(() => {
+        if (!user || user.role !== 'ADMIN') {
+            alert(`You need ADMIN ACCESS to view ${comment} page`);
+            navigate('/');
+        }
+
+    }, [user, navigate]);
+
 
     const { id } = useParams();
     console.log(`수정 할 상품 번호: ${id}`);
 
-    const navigate = useNavigate();
-    const comment = '상품 수정';
     const initial_value = {
         name: '', price: '', category: '', stock: '', image: '', description: ''
     }; //상품 객체 정보
@@ -40,7 +49,7 @@ function ProductUpdateForm() {
     useEffect(() => {
         const url = `${API_BASE_URL}/product/update/${id}`;
         axios
-            .get(url)
+            .get(url, { withCredentials: true })
             .then((response) => {
                 setProduct(response.data);
             })
@@ -152,7 +161,7 @@ function ProductUpdateForm() {
                         type="text"
                         placeholder="이름을(를) 입력해주세요"
                         name="name"
-                        value={product.name}
+                        value={product.name || ''}
                         onChange={ControlChange}
                         required
                     />
@@ -164,7 +173,7 @@ function ProductUpdateForm() {
                         type="text"
                         placeholder="가격을(를) 입력해주세요"
                         name="price"
-                        value={product.price}
+                        value={product.price || ''}
                         onChange={ControlChange}
                         required
                     />
@@ -175,7 +184,7 @@ function ProductUpdateForm() {
                         type="text"
                         placeholder="재고을(를) 입력해주세요"
                         name="stock"
-                        value={product.stock}
+                        value={product.stock || ''}
                         onChange={ControlChange}
                         required
                     />
@@ -186,7 +195,7 @@ function ProductUpdateForm() {
                         type="text"
                         placeholder="상품 설명을(를) 입력해주세요"
                         name="description"
-                        value={product.description}
+                        value={product.description || ''}
                         onChange={ControlChange}
                         required
                     />

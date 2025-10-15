@@ -152,7 +152,7 @@ pagingStatus : "pageNumber/ totalPages 페이지"
                             return;
                         }
                         try {
-                            await axios.delete(`${API_BASE_URL}/product/delete/${item.id}`);
+                            await axios.delete(`${API_BASE_URL}/product/delete/${item.id}`, { withCredentials: true });
                             alert(`'${item.name}' 상품을 성공적으로 삭제하셨습니다.`);
 
                             setProducts(currentProducts => currentProducts.filter(product => product.id !== item.id)
